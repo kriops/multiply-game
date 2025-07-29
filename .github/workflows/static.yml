@@ -16,26 +16,16 @@ concurrency:
 
 jobs:
   build:
+    name: cargo test
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install nightly Rust
-        uses: dtolnay/rust-toolchain@nightly
-
-      - name: Add WASM target
-        run: rustup target add wasm32-unknown-unknown
-
-      - name: Download and install Trunk binary
-#        run: wget -qO- https://github.com/trunk-rs/trunk/releases/download/v0.18.4/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
-        run: cargo install trunk
-
-      - name: Build with Trunk
-        run: trunk build --release --public-url "${{ github.event.repository.name }}"
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: rustup target add wasm32-unknown-unknown
+          | cargo install trunk
+          | trunk build --release --public-url "${{ github.event.repository.name }}"
+      - uses: actions/upload-artifact@v4
         with:
           name: github-pages
           path: dist/
@@ -47,8 +37,8 @@ jobs:
 
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
+      pages: write
+      id-token: write
 
     # Deploy to the github-pages environment
     environment:
@@ -58,6 +48,7 @@ jobs:
     # Specify runner + deployment step
     runs-on: ubuntu-latest
     steps:
+#      - uses: actions/configure-pages@v5
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
