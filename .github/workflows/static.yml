@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Build job
+  # This job builds the site and uploads it as a zip artifact.
   build:
     runs-on: ubuntu-latest
     steps:
@@ -24,25 +24,30 @@ jobs:
 
       - name: Install nightly Rust
         uses: dtolnay/rust-toolchain@nightly
-#        with:
-#          components: clippy, rustfmt
 
       - name: Add WASM target
         run: rustup target add wasm32-unknown-unknown
-
-#      - name: Lint and Format Check
-#        run: |
-#          cargo fmt --all -- --check
-#          cargo clippy --all-targets -- -D warnings
 
       - name: Download and install Trunk binary
         run: wget -qO- https://github.com/trunk-rs/trunk/releases/download/v0.18.4/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
 
       - name: Build with Trunk
-        run: ./trunk build --release --public-url "${{ github.event.repository.name }}"
+        run: ./trunk build --release
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
-          path: 'dist/'
+          path: dist/
+
+  # This job downloads the zip, unzips it, and deploys the contents to Pages.
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
