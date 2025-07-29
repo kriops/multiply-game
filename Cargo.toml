@@ -10,3 +10,6 @@ leptos = { version = "0.8.5", features = ["csr"] }
 serde = { version = "1.0.219", features = ["derive"] }
 serde-wasm-bindgen = "0.6.5"
 wasm-bindgen = "0.2.100"
+
+[package.metadata.leptos]
+site-root = "multiply-game"
