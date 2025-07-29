@@ -36,6 +36,10 @@ jobs:
       - name: Prepare artifact for deployment
         run: rsync -avL dist/ deploy/
 
+      # ✅ Add this step to disable Jekyll on GitHub Pages
+      - name: Add .nojekyll file
+        run: touch deploy/.nojekyll
+
       - name: Verify final artifact contents # debug
         run: ls -laR deploy/
 
