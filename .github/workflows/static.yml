@@ -33,16 +33,19 @@ jobs:
       - name: Build with Trunk
         run: ./trunk build --release --public-url "${{ github.event.repository.name }}"
 
-      # Create a clean directory without symlinks
       - name: Prepare artifact for deployment
         run: rsync -avL dist/ deploy/
 
-      # Upload the new 'deploy' directory
+      - name: Verify final artifact contents # debug
+        run: ls -laR deploy/
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
           path: deploy/
+
+
 
   # Download the zip, unzip it, and deploy the contents to Pages.
   deploy:
