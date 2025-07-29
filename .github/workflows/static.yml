@@ -41,13 +41,13 @@ jobs:
 #        run: touch deploy/.nojekyll
 
       - name: Verify final artifact contents # debug
-        run: ls -laR deploy/
+        run: ls -laR dist/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
-          path: deploy/
+          path: dist/
 
 
 
